@@ -3,5 +3,11 @@
 
 ## Setup
 
-`yarn && yarn build`
-`node ./dist/myfile.ts`
+```bash
+yarn && yarn build
+node ./dist/myfile.ts
+```
+
+## Debug
+
+Open your file you want to debug and press `F5`
