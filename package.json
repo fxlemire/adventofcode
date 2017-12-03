@@ -1,0 +1,31 @@
+{
+  "name": "adventofcode",
+  "version": "1.0.0",
+  "description": "http://adventofcode.com/",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "yarn clean && tsc",
+    "build:watch": "tsc -w",
+    "lint": "tslint -p tsconfig.json -c tslint.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fxlemire/adventofcode"
+  },
+  "bugs": {
+    "email": "fxlemire@webjomp.com",
+    "url": "https://github.com/fxlemire/adventofcode/issues"
+  },
+  "homepage": "https://github.com/fxlemire/adventofcode.git#README",
+  "author": "Francois-Xavier Lemire <fxlemire@webjomp.com>",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^2.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.53",
+    "tslint": "^5.8.0",
+    "tslint-config-airbnb": "^5.4.2"
+  }
+}

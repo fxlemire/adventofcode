@@ -1,0 +1,33 @@
+{
+  "extends": "tslint-config-airbnb",
+  "rules": {
+    // FUNCTIONALITY
+    "no-for-in-array": true,
+    "no-null-keyword": true,
+    "no-unused-variable": [true],
+    "no-use-before-declare": true,
+    "restrict-plus-operands": true,
+    "strict-boolean-expressions": [true, "allow-number", "allow-string", "allow-undefined-union"],
+
+    // MAINTAINABILITY
+    "max-line-length": [true, 140],
+    // turn on when conflict with shorthand-properties-first will be solved
+    // see https://github.com/palantir/tslint/pull/2831
+    "object-literal-sort-keys": false,
+
+    // OTHER
+    "import-name": false,
+
+    // STYLE
+    "completed-docs": [true, "classes", "functions"],
+    "no-boolean-literal-compare": true,
+    "no-increment-decrement": false,
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "lowercase-last",
+        "named-imports-order": "lowercase-last"
+      }
+    ]
+  }
+}
