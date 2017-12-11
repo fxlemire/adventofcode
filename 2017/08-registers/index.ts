@@ -44,12 +44,13 @@ const getRegisters = async (file: string): Promise<RegisterResponse> => {
     } as any);
 
     rl.on('line', (line: string) => {
+      // tslint:disable-next-line no-unused-variable
       const [reg, mod, amountStr, ifword, regCompared, comparator, valueStr] = line.match(/\S+/g);
       const modAmount = parseInt(amountStr, 10);
       const compareValue = parseInt(valueStr, 10);
 
-      registers[reg] = registers[reg] || 0;
-      registers[regCompared] = registers[regCompared] || 0;
+      registers[reg] = registers[reg] || 0; // tslint:disable-line strict-boolean-expressions
+      registers[regCompared] = registers[regCompared] || 0; // tslint:disable-line strict-boolean-expressions
 
       const isTrue = getStatementValidity(registers, regCompared, comparator as Comparator, compareValue);
 

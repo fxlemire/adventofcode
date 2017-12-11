@@ -36,7 +36,7 @@ const getBottomProgramName = async (file: string | Program[]): Promise<string> =
       dict[p.name] = dict[p.name] + 1 || 1;
       return dict;
     },
-    {});
+    {} as {[key: string]: number});
 
   return Object.keys(programsDict).find(name => programsDict[name] === 1);
 };
