@@ -44,8 +44,7 @@ const getRegisters = async (file: string): Promise<RegisterResponse> => {
     } as any);
 
     rl.on('line', (line: string) => {
-      // tslint:disable-next-line no-unused-variable
-      const [reg, mod, amountStr, ifword, regCompared, comparator, valueStr] = line.match(/\S+/g);
+      const [reg, mod, amountStr, /* ifword */ , regCompared, comparator, valueStr] = line.match(/\S+/g);
       const modAmount = parseInt(amountStr, 10);
       const compareValue = parseInt(valueStr, 10);
 
