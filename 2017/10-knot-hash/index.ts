@@ -2,30 +2,38 @@ import { createReadStream } from 'fs';
 import { resolve } from 'path';
 import { createInterface } from 'readline';
 
-const getLengths = async (file: string, isPartTwo = false): Promise<number[]> => {
+const getLengths = async (file: string, isPartTwo = false, input?: string): Promise<number[]> => {
+  const lengths: number[] = [];
+
+  const lineParser = (line: string) => {
+    const l = line.trim();
+
+    if (isPartTwo) {
+      for (let i = 0; i < l.length; ++i) {
+        lengths.push(l.charCodeAt(i));
+      }
+    } else {
+      l.split(',').forEach((n) => { lengths.push(parseInt(n, 10)); });
+    }
+  };
+
+  if (input) {
+    lineParser(input);
+    return isPartTwo ? [...lengths, 17, 31, 73, 47, 23] : lengths;
+  }
+
   return new Promise<number[]>((res) => {
-    const lengths: number[] = [];
     const rl = createInterface({
       crlfDelay: global.Infinity,
       input: createReadStream(resolve(__dirname, `../../resources/10-knot-hash/${file}.txt`)),
     } as any);
-    rl.on('line', (line: string) => {
-      const l = line.trim();
-
-      if (isPartTwo) {
-        for (let i = 0; i < l.length; ++i) {
-          lengths.push(l.charCodeAt(i));
-        }
-      } else {
-        l.split(',').forEach((n) => { lengths.push(parseInt(n, 10)); });
-      }
-    });
+    rl.on('line', lineParser);
     rl.on('close', () => res(isPartTwo ? [...lengths, 17, 31, 73, 47, 23] : lengths));
   });
 };
 
-const getSparseHash = async (file: string, isPartTwo = false): Promise<number[]> => {
-  const lengths = await getLengths(file, isPartTwo);
+const getSparseHash = async (file: string, isPartTwo = false, input?: string): Promise<number[]> => {
+  const lengths = await getLengths(file, isPartTwo, input);
   const list = [...Array(file === 'test' ? 5 : file === 'test1b' ? 3 : 256).keys()];
   let position = 0;
   let skip = 0;
@@ -80,17 +88,19 @@ const getDenseHash = (sparse: number[], level = 16): number[] => {
   return dense;
 };
 
-const getHexHash = async (file: string): Promise<string> => {
-  const list = await getSparseHash(file, true);
+export const getHexHash = async (file: string, input?: string): Promise<string> => {
+  const list = await getSparseHash(file, true, input);
   const dense = getDenseHash(list);
   const hexDense = dense.map(n => `${n < 16 ? '0' : ''}${n.toString(16)}`);
 
   return hexDense.join('');
 };
 
-(async function () {
+const run = async () => {
   console.log(`Test should be 12: ${await getPart1MultiplyResult('test')}`);
   console.log(`Personal test should be 0: ${await getPart1MultiplyResult('test1b')}`);
   console.log(`Result: ${await getPart1MultiplyResult('knot')}`);
   console.log(`Result: ${await getHexHash('knot')}`);
-})();
+};
+
+// run();
