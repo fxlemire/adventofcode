@@ -96,6 +96,7 @@ export const getHexHash = async (file: string, input?: string): Promise<string> 
   return hexDense.join('');
 };
 
+// tslint:disable-next-line no-unused-variable
 const run = async () => {
   console.log(`Test should be 12: ${await getPart1MultiplyResult('test')}`);
   console.log(`Personal test should be 0: ${await getPart1MultiplyResult('test1b')}`);

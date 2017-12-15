@@ -21,6 +21,8 @@
   "author": "Francois-Xavier Lemire <fxlemire@webjomp.com>",
   "license": "MIT",
   "dependencies": {
+    "canvas": "^2.0.0-alpha.8",
+    "gifencoder": "^1.1.0",
     "typescript": "^2.6.2"
   },
   "devDependencies": {
