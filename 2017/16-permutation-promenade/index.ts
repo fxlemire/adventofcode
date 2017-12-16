@@ -11,7 +11,7 @@ const getDanceMoves = (file: string): Promise<DanceMove[]> => new Promise((res) 
   const danceMoves: DanceMove[] = [];
   const rl = createInterface({
     crlfDelay: global.Infinity,
-    input: createReadStream(resolve(__dirname, `../../resources/16/${file}.txt`)),
+    input: createReadStream(resolve(__dirname, `../../resources/16-permutation-promenade/${file}.txt`)),
   } as any);
 
   rl.on('line', (line: string) => {
@@ -103,9 +103,9 @@ const getAnswer = async (file: string, programs: string[], rounds = 1): Promise<
   const prog = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
   const test = ['a', 'b', 'c', 'd', 'e'];
   console.log(`Test should be 'baedc': ${await getAnswer('test', test)}`);
-  console.log(`Result: ${await getAnswer('16', prog)}`);
+  console.log(`Result: ${await getAnswer('dance', prog)}`);
   console.log(`Test should be 'ceadb': ${await getAnswer('test', test, 2)}`);
   const now = Date.now();
-  console.log(`Result: ${await getAnswer('16', prog, 1000000000)}`);
+  console.log(`Result: ${await getAnswer('dance', prog, 1000000000)}`);
   console.log(`It took ${(Date.now() - now) / 1000 / 60} minutes`);
 })();
