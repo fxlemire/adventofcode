@@ -30,82 +30,96 @@ const getDanceMoves = (file: string): Promise<DanceMove[]> => new Promise((res) 
   rl.on('close', () => res(danceMoves));
 });
 
-const getAnswer = async (file: string, programs: string[], rounds = 1): Promise<string> => {
-  let prog = [...programs];
+const getAnswer = async (file: string, programs: string, rounds = 1): Promise<string> => {
+  let prog = programs.split('');
   const danceMoves = await getDanceMoves(file);
   let r = rounds;
+  let totalDanceSteps = -1;
 
-  while (--r >= 0) {
-    if (rounds > 1000) {
-      if (r % 100000 === 0) {
-        console.log(r);
+  const dance = (rounds: number, isFindingCycle = true, stepsToDance = danceMoves.length): void => {
+    while (--r >= 0) {
+      for (let danceIndex = 0; danceIndex < danceMoves.length; ++danceIndex) {
+        const dance = danceMoves[danceIndex];
+
+        switch (dance.move) {
+          case 's': {
+            const steps = dance.args[0] as number;
+            const tempProg = [];
+
+            for (let i = 0; i < prog.length; ++i) {
+              tempProg[(i + steps) % prog.length] = prog[i];
+            }
+
+            prog = tempProg;
+
+            break;
+          }
+          case 'x': {
+            const pos1name = prog[dance.args[0]];
+            const pos2name = prog[dance.args[1]];
+
+            prog[dance.args[0]] = pos2name;
+            prog[dance.args[1]] = pos1name;
+
+            break;
+          }
+          case 'p': {
+            let p1Index;
+            let p2Index;
+
+            for (let i = 0; i < prog.length; ++i) {
+              if (prog[i] === dance.args[0]) {
+                p1Index = i;
+              }
+
+              if (prog[i] === dance.args[1]) {
+                p2Index = i;
+              }
+
+              if (p1Index && p2Index) {
+                break;
+              }
+            }
+
+            prog[p1Index] = dance.args[1] as string;
+            prog[p2Index] = dance.args[0] as string;
+
+            break;
+          }
+          default:
+            throw new Error('Invalid move');
+        }
+
+        if (isFindingCycle && prog.join('') === programs) {
+          totalDanceSteps = (rounds - 1 - r) * danceMoves.length + danceIndex + 1;
+          break;
+        }
+      }
+
+      if (isFindingCycle && totalDanceSteps > -1) {
+        break;
       }
     }
+  };
 
-    for (let danceIndex = 0; danceIndex < danceMoves.length; ++danceIndex) {
-      const dance = danceMoves[danceIndex];
+  // first dance finds a cycle and sets totalDanceSteps
+  dance(r);
 
-      switch (dance.move) {
-        case 's': {
-          const steps = dance.args[0] as number;
-          const tempProg = [];
+  // remove cycles to get total steps that actually need to be danced
+  let stepsToDance = rounds * danceMoves.length % totalDanceSteps;
+  r = Math.floor(stepsToDance / danceMoves.length);
+  stepsToDance %= r;
 
-          for (let i = 0; i < prog.length; ++i) {
-            tempProg[(i + steps) % prog.length] = prog[i];
-          }
-
-          prog = tempProg;
-
-          break;
-        }
-        case 'x': {
-          const pos1name = prog[dance.args[0]];
-          const pos2name = prog[dance.args[1]];
-
-          prog[dance.args[0]] = pos2name;
-          prog[dance.args[1]] = pos1name;
-
-          break;
-        }
-        case 'p': {
-          let p1Index;
-          let p2Index;
-
-          for (let i = 0; i < prog.length; ++i) {
-            if (prog[i] === dance.args[0]) {
-              p1Index = i;
-            }
-
-            if (prog[i] === dance.args[1]) {
-              p2Index = i;
-            }
-
-            if (p1Index && p2Index) {
-              break;
-            }
-          }
-
-          prog[p1Index] = dance.args[1] as string;
-          prog[p2Index] = dance.args[0] as string;
-
-          break;
-        }
-        default:
-          throw new Error('Invalid move');
-      }
-    }
-  }
+  dance(r, false, stepsToDance);
 
   return prog.join('');
 };
 
 (async function () {
-  const prog = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
-  const test = ['a', 'b', 'c', 'd', 'e'];
+  const prog = 'abcdefghijklmnop';
+  const test = 'abcde';
   console.log(`Test should be 'baedc': ${await getAnswer('test', test)}`);
   console.log(`Result: ${await getAnswer('dance', prog)}`);
   console.log(`Test should be 'ceadb': ${await getAnswer('test', test, 2)}`);
-  const now = Date.now();
   console.log(`Result: ${await getAnswer('dance', prog, 1000000000)}`);
-  console.log(`It took ${(Date.now() - now) / 1000 / 60} minutes`);
 })();
