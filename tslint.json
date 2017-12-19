@@ -19,7 +19,7 @@
     "import-name": false,
 
     // STYLE
-    "completed-docs": [true, "classes", "functions"],
+    "completed-docs": [false, "classes", "functions"],
     "no-boolean-literal-compare": true,
     "no-increment-decrement": false,
     "ordered-imports": [
