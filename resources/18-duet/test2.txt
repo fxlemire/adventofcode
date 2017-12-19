@@ -1,7 +1,11 @@
-snd 1
-snd 2
-snd p
+jgz p 2
+rcv f
+jgz a -3
+set b 10
+snd b
+add b -1
+jgz b -2
 rcv a
-rcv b
-rcv c
-rcv d
+jgz p 2
+snd a
+jgz 1 -8

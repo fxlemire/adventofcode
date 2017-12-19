@@ -155,6 +155,7 @@ class Program {
         }
 
         this.registers[instruction.args[0]] = this.messageQueue.shift();
+        break;
       }
       case 'set': {
         this.registers[instruction.args[0]] = this.getValue(instruction.args[1]);
@@ -166,7 +167,7 @@ class Program {
         break;
       }
       default:
-        throw new Error('Invalid instruction');
+        throw new Error(`Invalid instruction: ${instruction.action}`);
     }
 
     return true;
@@ -182,14 +183,7 @@ const getProgram1TotalTransmissions = async (file: string): Promise<number> => {
   const p0 = new Program(0, registers, instructions);
   const p1 = new Program(1, registers, instructions);
 
-  let isDeadLocked = false;
-
-  while (!isDeadLocked) {
-    while (p0.execute(p1));
-    while (p1.execute(p0));
-
-    isDeadLocked = !p0.execute(p1) && !p1.execute(p0);
-  }
+  while ((p0.execute(p1) && p1.execute(p0)) || p0.execute(p1) || p1.execute(p0));
 
   return p1.getTransmissions();
 };
@@ -197,6 +191,6 @@ const getProgram1TotalTransmissions = async (file: string): Promise<number> => {
 (async function () {
   console.log(`Test should be 4: ${await getFirstRecoveredFrequency('test')}`);
   console.log(`Result: ${await getFirstRecoveredFrequency('duet')}`);
-  console.log(`Test should be 3: ${await getProgram1TotalTransmissions('test2')}`);
+  console.log(`Test should be 10: ${await getProgram1TotalTransmissions('test2')}`);
   console.log(`Result: ${await getProgram1TotalTransmissions('duet')}`);
 })();
