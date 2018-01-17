@@ -2,14 +2,9 @@ import { createReadStream } from 'fs';
 import { resolve } from 'path';
 import { createInterface } from 'readline';
 
-type BridgeData = {
-  type: number,
-  used: boolean,
-};
-
 type Bridge = {
   id: number,
-  data: [BridgeData, BridgeData],
+  data: [number, number],
 };
 
 type Store = {
@@ -28,19 +23,16 @@ const getInstructions = (file: string): Promise<{components: Bridge[], starters:
   rl.on('line', (line: string) => {
     const [b1, b2] = line.split('/').map(d => parseInt(d, 10));
     const id = components.length;
-    const bridge: Bridge = { id, data: [{ type: b1, used: false }, { type: b2, used: false }] };
+    const bridge: Bridge = { id, data: [b1, b2] };
 
     if (b1 === 0 || b2 === 0) {
-      if (b1 === 0) {
-        bridge.data[0].used = true;
-      } else {
-        bridge.data[1].used = true;
-      }
-
       starters.push(bridge);
-    } else {
-      components.push(bridge);
-      store[b1] = store[b1] ? [...store[b1], id] : [id];
+    }
+
+    components.push(bridge);
+    store[b1] = store[b1] ? [...store[b1], id] : [id];
+
+    if (b1 !== b2) {
       store[b2] = store[b2] ? [...store[b2], id] : [id];
     }
   });
@@ -48,40 +40,83 @@ const getInstructions = (file: string): Promise<{components: Bridge[], starters:
   rl.on('close', () => res({ components, starters, store }));
 });
 
-const getStrongestBridge = async (file: string): Promise<number> => {
+const printBridge = (bridge: Bridge[]): void => {
+  let bridgeString = '';
+  bridge.forEach((comp, i) => {
+    bridgeString += comp.data[0] + '/' + comp.data[1] + (i === bridge.length - 1 ? '' : '--');
+  });
+  console.log(bridgeString);
+};
+
+const removeFromStore = (store: Store, component: Bridge): void => {
+  let indexToRemove = store[component.data[0]].findIndex(c => c === component.id);
+
+  if (indexToRemove >= 0) {
+    store[component.data[0]].splice(indexToRemove, 1);
+  }
+
+  indexToRemove = store[component.data[1]].findIndex(c => c === component.id);
+
+  if (indexToRemove >= 0) {
+    store[component.data[1]].splice(indexToRemove, 1);
+  }
+};
+
+const getStrongestBridge = async (file: string, isPartTwo = false): Promise<number> => {
   const { components, starters, store } = await getInstructions(file);
   let bridgeStrength = 0;
+  let bridgeLength = 0;
 
-  const bridgeTraversal = (bridge: Bridge[], nextNum: number): void => {
-    if (store[nextNum].length > 0) {
-      const nextIndex = store[nextNum].pop();
-      const nextComponentData = components[nextIndex].data;
-      const nextNextNum = nextComponentData[0].type === nextNum ? nextComponentData[1].type : nextComponentData[0].type;
+  const updateBridgeStrength = (bridge: Bridge[]): void => {
+    const strength = bridge.reduce((acc, b) => b.data[0] + b.data[1] + acc, 0);
 
-      const nextBridge = bridge.concat(components[nextIndex]);
-
-      const nextNumId = components[nextIndex].id;
-      const indexToRemove = store[nextNextNum].findIndex(c => c === nextNumId);
-      store[nextNextNum].splice(indexToRemove, 1);
-
-      bridgeTraversal(nextBridge, nextNextNum);
-    } else {
-      const strength = bridge.reduce((acc, b) => b.data[0].type + b.data[1].type + acc, 0);
-
-      if (bridgeStrength < strength) {
+    if (isPartTwo) {
+      if (bridge.length > bridgeLength) {
+        bridgeLength = bridge.length;
         bridgeStrength = strength;
+        // printBridge(bridge);
+      } else if (bridge.length === bridgeLength && bridgeStrength < strength) {
+        bridgeStrength = strength;
+        // printBridge(bridge);
       }
-
-      // restore store
-      store[nextNum].push(bridge[bridge.length - 1].id);
-      const lastComponent = bridge[bridge.length - 1];
-      const storeIndex = lastComponent.data[0].type === nextNum ? lastComponent.data[1].type : lastComponent.data[0].type;
-      store[storeIndex].push(bridge[bridge.length - 1].id);
+    } else if (bridgeStrength < strength) {
+      bridgeStrength = strength;
+      // printBridge(bridge);
     }
   };
 
+  const bridgeTraversal = (bridge: Bridge[], nextNum: number, store: Store): void => {
+    const levelQueue = [...store[nextNum]];
+
+    while (levelQueue.length > 0) {
+      const nextComponentIndex = levelQueue.pop();
+
+      if (nextComponentIndex !== undefined) {
+        const nextComponentData = components[nextComponentIndex].data;
+        const nextNextNum = nextComponentData[0] === nextNum ? nextComponentData[1] : nextComponentData[0];
+        const nextBridge = bridge.concat(components[nextComponentIndex]);
+
+        removeFromStore(store, components[nextComponentIndex]);
+        bridgeTraversal(nextBridge, nextNextNum, store);
+      }
+    }
+
+    updateBridgeStrength(bridge);
+
+    // backtrack: restore component in store
+    const lastComponent = bridge[bridge.length - 1];
+    const storeIndex = lastComponent.data[0] === nextNum ? lastComponent.data[1] : lastComponent.data[0];
+    store[storeIndex].push(lastComponent.id);
+    store[nextNum].push(lastComponent.id);
+  };
+
   starters.forEach((starter) => {
-    const strength = bridgeTraversal([starter], starter.data[0].type || starter.data[1].type);
+    const innerStore = Object.keys(store).reduce(
+      (acc, k) => ({ ...acc, [k]: [...store[k]] }),
+      {});
+
+    removeFromStore(innerStore, starter);
+    bridgeTraversal([starter], starter.data[0] || starter.data[1], innerStore);
   });
 
   return bridgeStrength;
@@ -89,4 +124,7 @@ const getStrongestBridge = async (file: string): Promise<number> => {
 
 (async function () {
   console.log(`Test should be 31: ${await getStrongestBridge('test')}`);
+  console.log(`Result: ${await getStrongestBridge('components')}`);
+  console.log(`Test should be 19: ${await getStrongestBridge('test', true)}`);
+  console.log(`Result: ${await getStrongestBridge('components', true)}`);
 })();
