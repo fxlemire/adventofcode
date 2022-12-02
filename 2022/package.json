@@ -1,0 +1,39 @@
+{
+  "name": "advent-of-code-2022",
+  "version": "1.0.0",
+  "description": "https://adventofcode.com/2022/",
+  "keywords": [
+    "advent of code",
+    "2022"
+  ],
+  "main": "src/index.ts",
+  "author": "François-Xavier Lemire <fx@getmercantile.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fxlemire/adventofcode"
+  },
+  "bugs": {
+    "email": "fx@getmercantile.com",
+    "url": "https://github.com/fxlemire/adventofcode/issues"
+  },
+  "homepage": "https://github.com/fxlemire/adventofcode/tree/master/2022#readme",
+  "scripts": {
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "start": "ts-node-dev --inspect -- ./src/index.ts",
+    "start:watch": "WATCH=true ts-node-dev --inspect -- ./src/index.ts",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.3",
+    "jest": "^29.3.1",
+    "prettier": "^2.8.0",
+    "ts-jest": "^29.0.3",
+    "ts-node-dev": "^2.0.0"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "typescript": "^4.9.3"
+  }
+}
