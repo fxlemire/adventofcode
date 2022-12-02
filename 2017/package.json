@@ -1,7 +1,7 @@
 {
-  "name": "adventofcode",
+  "name": "advent-of-code-2017",
   "version": "1.0.0",
-  "description": "http://adventofcode.com/",
+  "description": "https://adventofcode.com/2017/",
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf ./dist",
@@ -17,7 +17,7 @@
     "email": "fxlemire@webjomp.com",
     "url": "https://github.com/fxlemire/adventofcode/issues"
   },
-  "homepage": "https://github.com/fxlemire/adventofcode.git#README",
+  "homepage": "https://github.com/fxlemire/adventofcode/tree/master/2017#readme",
   "author": "Francois-Xavier Lemire <fxlemire@webjomp.com>",
   "license": "MIT",
   "dependencies": {
