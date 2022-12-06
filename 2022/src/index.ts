@@ -3,6 +3,7 @@ import { runDayTwo } from './02-rock-paper-scissors';
 import { runDayThree } from './03-rucksack-reorganization';
 import { runDayFour } from './04-camp-cleanup';
 import { runDayFive } from './05-supply-stacks';
+import { runDaySix } from './06-tuning-trouble';
 
 function enableWatchMode() {
   setInterval(() => {}, 1 << 30);
@@ -18,4 +19,5 @@ if (process.env.WATCH) {
   console.log(`Day 3: ${runDayThree().join(' // ')}`);
   console.log(`Day 4: ${runDayFour().join(' // ')}`);
   console.log(`Day 5: ${(await runDayFive()).join(' // ')}`);
+  console.log(`Day 6: ${runDaySix().join(' // ')}`);
 })();
