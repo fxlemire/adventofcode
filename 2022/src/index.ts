@@ -5,6 +5,7 @@ import { runDayFour } from './04-camp-cleanup';
 import { runDayFive } from './05-supply-stacks';
 import { runDaySix } from './06-tuning-trouble';
 import { runDaySeven } from './07-no-spaceleft-on-device';
+import { runDayEight } from './08-treetop-tree-house';
 
 function enableWatchMode() {
   setInterval(() => {}, 1 << 30);
@@ -22,4 +23,5 @@ if (process.env.WATCH) {
   console.log(`Day 5: ${(await runDayFive()).join(' // ')}`);
   console.log(`Day 6: ${runDaySix().join(' // ')}`);
   console.log(`Day 7: ${(await runDaySeven()).join(' // ')}`);
+  console.log(`Day 8: ${runDayEight().join(' // ')}`);
 })();
