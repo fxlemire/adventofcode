@@ -8,6 +8,7 @@ import { runDaySeven } from './07-no-spaceleft-on-device';
 import { runDayEight } from './08-treetop-tree-house';
 import { runDayNine } from './09-rope-bridge';
 import { runDayTen } from './10-cathode-ray-tube';
+import { runDayEleven } from './11-monkey-in-the-middle';
 
 function enableWatchMode() {
   setInterval(() => {}, 1 << 30);
@@ -30,4 +31,5 @@ if (process.env.WATCH) {
   const [dayTenPart1, dayTenPart2] = await runDayTen();
   console.log(`Day 10: ${dayTenPart1}`);
   dayTenPart2.forEach((screenRow) => console.log(screenRow));
+  console.log(`Day 11: ${(await runDayEleven()).join(' // ')}`);
 })();
